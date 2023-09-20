@@ -1,8 +1,9 @@
-import os, streamlit as st
-
+import os
+import streamlit as st
 from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
 from llama_index.llms import LlamaCPP
 from llama_index.llms.llama_utils import messages_to_prompt, completion_to_prompt
+from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 
 st.title("Ask Aria")
 query = st.text_input(
@@ -14,6 +15,7 @@ if st.button("Submit"):
         st.error(f"Please provide the search query.")
     else:
         try:
+            embed_model = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-large-en-v1.5")
             llm = LlamaCPP(
                 model_url="https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/resolve/main/llama-2-13b-chat.Q4_0.gguf",
                 temperature=0.1,
@@ -28,7 +30,7 @@ if st.button("Submit"):
 
             # Load documents from the 'data' directory
             documents = SimpleDirectoryReader("data").load_data()
-            service_context = ServiceContext.from_defaults(llm=llm)
+            service_context = ServiceContext.from_defaults(llm=llm, embed_model=embed_model)
             index = VectorStoreIndex.from_documents(
                 documents, service_context=service_context
             )
@@ -36,4 +38,5 @@ if st.button("Submit"):
             response = index.query(query)
             st.success(response)
         except Exception as e:
-            st.error(f"An error occurred: {e}")
+            import traceback
+            st.error(f"An error occurred: {e}\n{traceback.format_exc()}")

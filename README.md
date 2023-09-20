@@ -9,5 +9,5 @@ For a step-by-step guide, see [this](https://alphasec.io/query-your-own-document
 ## Quick start
 
 1. `pip install -r requirements`
-1. `pip install streamlit sentence_transformers`
+1. `pip install streamlit`
 1. `streamlit run index.py`
