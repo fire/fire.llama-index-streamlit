@@ -8,7 +8,7 @@ from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 st.title("Ask Aria")
 
 query = st.text_input(
-    "What would you like to ask? (source: data)", ""
+    "What would you like to ask? (source: data/godot-developer-fund.md)", ""
 )
 
 if st.button("Submit"):
