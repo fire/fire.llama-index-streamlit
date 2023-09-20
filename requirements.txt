@@ -1,2 +1,4 @@
 streamlit==1.26.0
-llama-index==0.5.27
+llama_index
+llama-cpp-python
+sentence-transformers
