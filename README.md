@@ -8,13 +8,15 @@ For a step-by-step guide, see [this](https://alphasec.io/query-your-own-document
 
 ## Quick start
 
-1. Install the requirements: `pip install -r requirements.txt`
-2. Install Streamlit: `pip install streamlit`
-3. For Windows users, install cublas:
-
-```powershell
-$env:CMAKE_ARGS="-DLLAMA_CUBLAS=on"
-pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir
 ```
-
-4. Run the application: `streamlit run index.py`
+scoop install micromamba
+(& $env:MAMBA_EXE 'shell' 'hook' -s 'powershell' -p $env:MAMBA_ROOT_PREFIX) | Out-String | Invoke-Expression
+micromamba create -n llama-index
+micromamba activate -n llama-index
+micromamba install -c conda-forge clblast
+$env:CMAKE_ARGS="-DLLAMA_CLBLAST=on"
+pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir --user
+pip install -r requirements.txt
+pip install streamlit
+streamlit run index.py
+```

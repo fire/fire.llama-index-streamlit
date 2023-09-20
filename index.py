@@ -23,7 +23,7 @@ if st.button("Submit"):
                 max_new_tokens=256,
                 context_window=3900,
                 generate_kwargs={},
-                model_kwargs={"n_gpu_layers": 1},
+                model_kwargs={"n_gpu_layers": 1000},
                 messages_to_prompt=messages_to_prompt,
                 completion_to_prompt=completion_to_prompt,
                 verbose=True,
