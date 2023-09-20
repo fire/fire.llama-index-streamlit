@@ -8,6 +8,13 @@ For a step-by-step guide, see [this](https://alphasec.io/query-your-own-document
 
 ## Quick start
 
-1. `pip install -r requirements`
-1. `pip install streamlit`
-1. `streamlit run index.py`
+1. Install the requirements: `pip install -r requirements.txt`
+2. Install Streamlit: `pip install streamlit`
+3. For Windows users, install cublas:
+
+```powershell
+$env:CMAKE_ARGS="-DLLAMA_CUBLAS=on"
+pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir
+```
+
+4. Run the application: `streamlit run index.py`
