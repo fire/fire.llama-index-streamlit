@@ -8,7 +8,7 @@ from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 st.title("Ask Aria")
 
 query = st.text_input(
-    "What would you like to ask? (source: data/godot-developer-fund.txt)", ""
+    "What would you like to ask? (source: data)", ""
 )
 
 if st.button("Submit"):
@@ -36,11 +36,11 @@ if st.button("Submit"):
                 documents, service_context=service_context
             )
             
-            # Create a query engine from the index
-            query_engine = index.as_query_engine()
+            # Create a chat engine from the index
+            chat_engine = index.as_chat_engine()
 
-            # Query the engine with the user's input
-            response = query_engine.query(query)
+            # Chat with the engine using the user's input
+            response = chat_engine.chat(query)
             
             st.success(response)
         except Exception as e:
