@@ -1,4 +1,3 @@
 streamlit==1.26.0
 llama_index
 llama-cpp-python
-sentence-transformers
