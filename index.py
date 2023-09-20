@@ -18,7 +18,7 @@ if st.button("Submit"):
         try:
             embed_model = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
             llm = LlamaCPP(
-                model_url="https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/resolve/main/llama-2-13b-chat.Q4_0.gguf",
+                model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
                 temperature=0.1,
                 max_new_tokens=256,
                 context_window=3900,
