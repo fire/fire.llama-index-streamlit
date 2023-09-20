@@ -6,6 +6,7 @@ from llama_index.llms.llama_utils import messages_to_prompt, completion_to_promp
 from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 
 st.title("Ask Aria")
+
 query = st.text_input(
     "What would you like to ask? (source: data/paul_graham_essay.txt)", ""
 )
@@ -15,7 +16,7 @@ if st.button("Submit"):
         st.error(f"Please provide the search query.")
     else:
         try:
-            embed_model = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+            embed_model = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
             llm = LlamaCPP(
                 model_url="https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/resolve/main/llama-2-13b-chat.Q4_0.gguf",
                 temperature=0.1,
@@ -34,8 +35,13 @@ if st.button("Submit"):
             index = VectorStoreIndex.from_documents(
                 documents, service_context=service_context
             )
+            
+            # Create a query engine from the index
+            query_engine = index.as_query_engine()
 
-            response = index.query(query)
+            # Query the engine with the user's input
+            response = query_engine.query(query)
+            
             st.success(response)
         except Exception as e:
             import traceback
