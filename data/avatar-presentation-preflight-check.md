@@ -14,7 +14,7 @@
 
 | Avatar Quality                            | Poor         |
 | ----------------------------------------- | ------------ |
-| Primitives (Mesh Complexity)              | 70,000       |
+| Primitives (Mesh Complexity)              | 70000       |
 | Bounds Size (Model Scale)                 | 5m x 6m x 5m |
 | Texture Memory (Texture Size)             | 150 MB       |
 | Morph Targets (Blendshape Amount)         | 16           |
