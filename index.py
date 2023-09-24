@@ -10,7 +10,7 @@ st.title("Ask Aria")
 # Construct the model outside of the form submission check
 embed_model = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
 llm = LlamaCPP(
-    model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q2_K.gguf",
+    model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
     temperature=0.1,
     max_new_tokens=256,
     context_window=3900,
@@ -29,11 +29,11 @@ index = VectorStoreIndex.from_documents(
 )
 
 # Create a chat engine from the index
-chat_engine = index.as_chat_engine()
+query_engine = index.as_query_engine()
 
 with st.form(key='my_form'):
     query = st.text_input(
-        "What would you like to ask? (source: data)", ""
+        "What would you like to ask? (source: data/avatar-presentation-preflight-check.md)", ""
     )
     submit_button = st.form_submit_button(label='Submit')
 
@@ -43,7 +43,7 @@ if submit_button:
     else:
         try:
             # Chat with the engine using the user's input
-            response = chat_engine.chat(query)
+            response = query_engine.query(query) 
             
             st.success(response)
         except Exception as e:
