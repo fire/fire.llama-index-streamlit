@@ -7,11 +7,13 @@ from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 
 st.title("Ask Aria")
 
-query = st.text_input(
-    "What would you like to ask? (source: data)", ""
-)
+with st.form(key='my_form'):
+    query = st.text_input(
+        "What would you like to ask? (source: data)", ""
+    )
+    submit_button = st.form_submit_button(label='Submit')
 
-if st.button("Submit"):
+if submit_button:
     if not query.strip():
         st.error(f"Please provide the search query.")
     else:
