@@ -65,7 +65,7 @@ c.execute('''
 ''')
 
 with st.form(key='my_form'):
-    queryInput = st.text_input("What would you like to ask? (source: data/avatar-presentation-preflight-check.md)", defaultQuery)
+    queryInput = st.text_input("What would you like to ask? (source: data)", defaultQuery)
     submitButton = st.form_submit_button(label='Submit')
 
 if submitButton:
