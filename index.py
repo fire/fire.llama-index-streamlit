@@ -9,31 +9,37 @@ from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 
 st.title("Ask Aria")
 
-embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
-llmModel = LlamaCPP(
-    model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
-    temperature=0.1,
-    max_new_tokens=256,
-    context_window=3900,
-    generate_kwargs={},
-    model_kwargs={"n_gpu_layers": 1000},
-    messages_to_prompt=messages_to_prompt,
-    completion_to_prompt=completion_to_prompt,
-    verbose=True,
-)
+@st.cache(allow_output_mutation=True)
+def load_data_and_models():
+    embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
+    llmModel = LlamaCPP(
+        model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
+        temperature=0.1,
+        max_new_tokens=256,
+        context_window=3900,
+        generate_kwargs={},
+        model_kwargs={"n_gpu_layers": 1000},
+        messages_to_prompt=messages_to_prompt,
+        completion_to_prompt=completion_to_prompt,
+        verbose=True,
+    )
 
-# Load data from both directories
-documentsData1 = SimpleDirectoryReader("data").load_data()
-documentsData2 = SimpleDirectoryReader("data/manuals").load_data()
-documentsData4 = SimpleDirectoryReader("data/manuals/.github").load_data()
+    # Load data from both directories
+    documentsData1 = SimpleDirectoryReader("data").load_data()
+    documentsData2 = SimpleDirectoryReader("data/manuals").load_data()
+    documentsData4 = SimpleDirectoryReader("data/manuals/.github").load_data()
 
-# Combine the data
-documentsData = documentsData1 + documentsData2 + documentsData4
+    # Combine the data
+    documentsData = documentsData1 + documentsData2 + documentsData4
 
-serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
-indexData = VectorStoreIndex.from_documents(documentsData, service_context=serviceContext)
+    serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
+    indexData = VectorStoreIndex.from_documents(documentsData, service_context=serviceContext)
 
-queryEngine = indexData.as_query_engine()
+    queryEngine = indexData.as_query_engine()
+
+    return queryEngine
+
+queryEngine = load_data_and_models()
 
 defaultQuery = ""
 
