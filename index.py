@@ -9,6 +9,13 @@ from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 
 st.title("Ask Aria")
 
+st.markdown("""
+AI Disclaimer: Aria, the AI, generates responses based on data it has learned. These responses do not reflect any personal opinions or beliefs. All user interactions are collected and utilized to improve and educate the Aria system. By using this service, you're agreeing to license any contributions under the [MIT License](https://opensource.org/licenses/MIT).
+
+For more details, visit our code repository on [GitHub](https://github.com/fire/fire.llama-index-streamlit).
+""")
+
+
 @st.cache_resource
 def load_data_and_models():
     embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
