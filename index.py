@@ -9,7 +9,7 @@ from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 
 st.title("Ask Aria")
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def load_data_and_models():
     embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
     llmModel = LlamaCPP(
