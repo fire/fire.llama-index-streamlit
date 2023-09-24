@@ -10,7 +10,7 @@ st.title("Ask Aria")
 # Construct the model outside of the form submission check
 embed_model = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
 llm = LlamaCPP(
-    model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
+    model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q2_K.gguf",
     temperature=0.1,
     max_new_tokens=256,
     context_window=3900,
