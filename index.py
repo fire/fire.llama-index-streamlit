@@ -22,12 +22,13 @@ llmModel = LlamaCPP(
     verbose=True,
 )
 
-directory = "data"
-required_exts = [".md", ".qmd"]
+# Load data from both directories
+documentsData1 = SimpleDirectoryReader("data").load_data()
+documentsData2 = SimpleDirectoryReader("data/manuals/changelog").load_data()
+documentsData4 = SimpleDirectoryReader("data/manuals").load_data()
 
-reader = SimpleDirectoryReader( input_dir=directory, required_exts=required_exts, recursive=True )
-documentsData = reader.load_data()
-print(f"Loaded {len(documentsData)} docs.")
+# Combine the data
+documentsData = documentsData1 + documentsData2 + documentsData4
 
 serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 indexData = VectorStoreIndex.from_documents(documentsData, service_context=serviceContext)
