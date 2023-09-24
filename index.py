@@ -24,12 +24,10 @@ llmModel = LlamaCPP(
 
 # Load data from both directories
 documentsData1 = SimpleDirectoryReader("data").load_data()
-documentsData2 = SimpleDirectoryReader("data/manuals/decisions").load_data()
-documentsData3 = SimpleDirectoryReader("data/manuals/prototypes").load_data()
 documentsData4 = SimpleDirectoryReader("data/manuals").load_data()
 
 # Combine the data
-documentsData = documentsData1 + documentsData2 + documentsData3 + documentsData4
+documentsData = documentsData1 + documentsData4
 
 serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 indexData = VectorStoreIndex.from_documents(documentsData, service_context=serviceContext)
