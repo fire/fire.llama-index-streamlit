@@ -31,12 +31,10 @@ def load_data_and_models():
         verbose=True,
     )
 
-    # Load data from both directories
     documentsData1 = SimpleDirectoryReader("data").load_data()
     documentsData2 = SimpleDirectoryReader("data/manuals").load_data()
     documentsData4 = SimpleDirectoryReader("data/manuals/.github").load_data()
 
-    # Combine the data
     documentsData = documentsData1 + documentsData2 + documentsData4
 
     serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
@@ -95,13 +93,28 @@ if submitButton:
             import traceback
             st.error(f"An error occurred: {e}\n{traceback.format_exc()}")
 
+if 'page_number' not in st.session_state:
+    st.session_state['page_number'] = 0
+
+results_per_page = 10
+
+start_index = st.session_state.page_number * results_per_page
+
 c.execute('''
     SELECT * FROM results
     ORDER BY ROWID DESC
-    LIMIT 10
-''')
-last10QueriesResults = c.fetchall()
+    LIMIT ? OFFSET ?
+''', (results_per_page, start_index))
+current_page_results = c.fetchall()
 
-st.table(last10QueriesResults)
+st.table(current_page_results)
+
+if len(current_page_results) == results_per_page:
+    if st.button('Next Page'):
+        st.session_state.page_number += 1
+
+if st.session_state.page_number > 0:
+    if st.button('Previous Page'):
+        st.session_state.page_number -= 1
 
 conn.close()
