@@ -1,15 +1,18 @@
 import os
 import streamlit as st
-from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext, load_index_from_storage
 from llama_index.llms import LlamaCPP
 from llama_index.llms.llama_utils import messages_to_prompt, completion_to_prompt
 from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
+from llama_index import StorageContext
 
 st.title("Ask Aria")
 
 query = st.text_input(
     "What would you like to ask? (source: data/godot-developer-fund.md)", ""
 )
+
+persist_dir = "./storage"
 
 if st.button("Submit"):
     if not query.strip():
@@ -32,10 +35,20 @@ if st.button("Submit"):
             # Load documents from the 'data' directory
             documents = SimpleDirectoryReader("data").load_data()
             service_context = ServiceContext.from_defaults(llm=llm, embed_model=embed_model)
-            index = VectorStoreIndex.from_documents(
-                documents, service_context=service_context
-            )
             
+            # Check if index is already persisted
+            if os.path.exists(persist_dir):
+                # rebuild storage context
+                storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
+                # load index
+                index = load_index_from_storage(storage_context)
+            else:
+                index = VectorStoreIndex.from_documents(
+                    documents, service_context=service_context
+                )
+                # Persist the index
+                index.storage_context.persist(persist_dir=persist_dir)
+
             # Create a query engine from the index
             query_engine = index.as_query_engine()
 
