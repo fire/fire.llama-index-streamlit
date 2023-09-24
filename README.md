@@ -10,8 +10,8 @@ scoop install micromamba
 micromamba create -n llama-index
 micromamba activate -n llama-index
 micromamba install -c conda-forge clblast
-$env:CMAKE_ARGS="-DLLAMA_CLBLAST=on"
-pip install llama-cpp-python --force-reinstall --upgrade --user
+$env:CMAKE_ARGS="-DLLAMA_CLBLAST=on" 
+pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir
 pip install -r requirements.txt
 pip install streamlit
 streamlit run index.py

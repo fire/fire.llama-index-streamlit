@@ -1,4 +1,6 @@
-# What is VRM ? What can VRM do ?
+# VRM - 3D Avatar File Format for VR
+
+"VRM" is a file format for handling 3D humanoid avatar (3D model) data for VR applications. It is based on glTF2.0. Anyone is free to use it.
 
 ![VRM](https://vrm.dev/en/vrm/vrm_about.html)
 
