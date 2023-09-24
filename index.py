@@ -24,8 +24,8 @@ llmModel = LlamaCPP(
 
 # Load data from both directories
 documentsData1 = SimpleDirectoryReader("data").load_data()
-documentsData2 = SimpleDirectoryReader("data/manuals/changelog").load_data()
-documentsData4 = SimpleDirectoryReader("data/manuals").load_data()
+documentsData2 = SimpleDirectoryReader("data/manuals").load_data()
+documentsData4 = SimpleDirectoryReader("data/manuals/.github").load_data()
 
 # Combine the data
 documentsData = documentsData1 + documentsData2 + documentsData4
