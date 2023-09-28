@@ -23,3 +23,10 @@ streamlit run index.py
 micromamba activate -n llama-index
 streamlit run index.py
 ```
+
+## Quick start, second run proxying
+
+```zsh
+curl https://tunnel.pyjam.as/8501 > tunnel.conf && wg-quick up ./tunnel.conf
+wg-quick down ./tunnel.conf
+```
