@@ -14,19 +14,24 @@ $env:CMAKE_ARGS="-DLLAMA_CLBLAST=on"
 pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir
 pip install -r requirements.txt
 pip install streamlit
-streamlit run index.py
+streamlit run index.py --server.port 8502 --server.address 0.0.0.0
 ```
 
 ## Quick start, second run
 
 ```powershell
 micromamba activate -n llama-index
-streamlit run index.py
+streamlit run index.py --server.port 8502 --server.address 0.0.0.0
 ```
 
 ## Quick start, second run proxying
 
+```
+cp com.fire.llama.index.streamlit.plist ~/Library/LaunchAgents/
+launchctl load  ~/Library/LaunchAgents/com.fire.llama.index.streamlit.plist
+```
+
 ```zsh
-curl https://tunnel.pyjam.as/8501 > tunnel.conf && wg-quick up ./tunnel.conf
 wg-quick down ./tunnel.conf
+curl https://tunnel.pyjam.as/8502 > tunnel.conf && wg-quick up ./tunnel.conf
 ```

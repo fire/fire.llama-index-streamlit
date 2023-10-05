@@ -11,6 +11,8 @@
         <string>/Users/ernest.lee/Documents/fire.llama-index-streamlit/index.py</string>
         <string>--server.address</string>
         <string>0.0.0.0</string>
+        <string>--server.port</string>
+        <string>8502</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
