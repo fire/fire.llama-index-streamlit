@@ -28,6 +28,7 @@ streamlit run index.py --server.port 8502 --server.address 0.0.0.0
 
 ```
 cp com.fire.llama.index.streamlit.plist ~/Library/LaunchAgents/
+launchctl unload  ~/Library/LaunchAgents/com.fire.llama.index.streamlit.plist
 launchctl load  ~/Library/LaunchAgents/com.fire.llama.index.streamlit.plist
 ```
 
