@@ -32,6 +32,6 @@ launchctl load  ~/Library/LaunchAgents/com.fire.llama.index.streamlit.plist
 ```
 
 ```zsh
-wg-quick down ./tunnel.conf
-curl https://tunnel.pyjam.as/8502 > tunnel.conf && wg-quick up ./tunnel.conf
+curl https://get.telebit.io/ | bash
+telebit http 8502
 ```
