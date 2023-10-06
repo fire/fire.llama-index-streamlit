@@ -27,7 +27,7 @@ CHANGELOG_DIR = "data/manuals/changelog"
 
 from llama_index import StorageContext, load_index_from_storage
 
-@st.cache_resource
+@st.cache(allow_output_mutation=True)
 def load_data_and_models():
     # Define destination directory
     dest_dir = 'cache'
