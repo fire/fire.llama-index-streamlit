@@ -27,7 +27,7 @@ CHANGELOG_DIR = "data/manuals/changelog"
 
 from llama_index import StorageContext, load_index_from_storage
 
-@st.cache_data(persist="disk")
+@st.cache_resource
 def load_data_and_models():
     # Define destination directory
     dest_dir = 'cache'
@@ -66,14 +66,17 @@ def load_data_and_models():
                         docs.append(Document(text=text))
                 except UnicodeDecodeError:
                     print(f"Error decoding file: {full_path}")
-        storage_context = StorageContext.from_defaults(persist_dir="./storage")
-        try:
-            indexData = load_index_from_storage(storage_context)
-        except Exception as e:
-            print(f"An error occurred: {e}")        
+    storage_context = StorageContext.from_defaults(persist_dir="./storage")
+
+    try:
+        indexData = load_index_from_storage(storage_context)
+    except Exception as e:
+        print(f"Index data not found in storage. Generating new vectors: {e}")
         indexData = VectorStoreIndex.from_documents(docs, service_context=serviceContext)
-        queryEngine = indexData.as_query_engine()
-        indexData.storage_context.persist()
+
+    queryEngine = indexData.as_query_engine()
+
+    indexData.storage_context.persist()
 
     return queryEngine
 
