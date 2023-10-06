@@ -26,10 +26,22 @@ DECISION_DIR = "data/manuals/decisions"
 CHANGELOG_DIR = "data/manuals/changelog"
 
 from llama_index import StorageContext, load_index_from_storage
-from typing import Tuple
+from typing import List
 
 @st.cache_data(persist="disk")
-def load_data_and_models(docs: Tuple[str]):
+def load_data_and_models(docs: List[str]):   
+    for path in docs:
+        for name in os.listdir(path):
+            full_path = os.path.join(path, name)
+            if os.path.isfile(full_path):
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        text = f.read()
+                        if len(text) == 0:
+                            continue
+                        docs.append(Document(text=text))
+                except UnicodeDecodeError:
+                    print(f"Error decoding file: {full_path}")
     # Define destination directory
     dest_dir = 'cache'
 
@@ -66,20 +78,8 @@ def load_data_and_models(docs: Tuple[str]):
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
 docs = []
-for path in paths:
-    for name in os.listdir(path):
-        full_path = os.path.join(path, name)
-        if os.path.isfile(full_path):
-            try:
-                with open(full_path, 'r', encoding='utf-8') as f:
-                    text = f.read()
-                    if len(text) == 0:
-                        continue
-                    docs.append(Document(text=text))
-            except UnicodeDecodeError:
-                print(f"Error decoding file: {full_path}")
 
-queryEngine = load_data_and_models(docs)
+queryEngine = load_data_and_models(paths)
 
 
 defaultQuery = ""
