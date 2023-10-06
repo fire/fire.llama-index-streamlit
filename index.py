@@ -80,7 +80,7 @@ indexData = {}
 try:
     indexData = load_index_data(storage_context, docs, serviceContext)
 except Exception as e:
-    indexData = VectorStoreIndex.from_documents(_docs, service_context=_service_context)
+    indexData = VectorStoreIndex.from_documents(docs, service_context=serviceContext)
 
 queryEngine = indexData.as_query_engine()
 
