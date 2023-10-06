@@ -26,22 +26,9 @@ DECISION_DIR = "data/manuals/decisions"
 CHANGELOG_DIR = "data/manuals/changelog"
 
 from llama_index import StorageContext, load_index_from_storage
-from typing import List
 
 @st.cache_data(persist="disk")
-def load_data_and_models(docs: List[str]):   
-    for path in docs:
-        for name in os.listdir(path):
-            full_path = os.path.join(path, name)
-            if os.path.isfile(full_path):
-                try:
-                    with open(full_path, 'r', encoding='utf-8') as f:
-                        text = f.read()
-                        if len(text) == 0:
-                            continue
-                        docs.append(Document(text=text))
-                except UnicodeDecodeError:
-                    print(f"Error decoding file: {full_path}")
+def load_data_and_models():
     # Define destination directory
     dest_dir = 'cache'
 
@@ -65,21 +52,47 @@ def load_data_and_models(docs: List[str]):
     )
     serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
-    storage_context = StorageContext.from_defaults(persist_dir="./storage")
-    try:
-        indexData = load_index_from_storage(storage_context)
-    except Exception as e:
-        print(f"An error occurred: {e}")        
-    indexData = VectorStoreIndex.from_documents(docs, service_context=serviceContext)
-    queryEngine = indexData.as_query_engine()
-    indexData.storage_context.persist()
+    paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
+    docs = []
+    for path in paths:
+        for name in os.listdir(path):
+            full_path = os.path.join(path, name)
+            if os.path.isfile(full_path):
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        text = f.read()
+                        if len(text) == 0:
+                            continue
+                        docs.append(Document(text=text))
+                except UnicodeDecodeError:
+                    print(f"Error decoding file: {full_path}")
+        storage_context = StorageContext.from_defaults(persist_dir="./storage")
+        try:
+            indexData = load_index_from_storage(storage_context)
+        except Exception as e:
+            print(f"An error occurred: {e}")        
+        indexData = VectorStoreIndex.from_documents(docs, service_context=serviceContext)
+        queryEngine = indexData.as_query_engine()
+        indexData.storage_context.persist()
 
     return queryEngine
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
 docs = []
+for path in paths:
+    for name in os.listdir(path):
+        full_path = os.path.join(path, name)
+        if os.path.isfile(full_path):
+            try:
+                with open(full_path, 'r', encoding='utf-8') as f:
+                    text = f.read()
+                    if len(text) == 0:
+                        continue
+                    docs.append(Document(text=text))
+            except UnicodeDecodeError:
+                print(f"Error decoding file: {full_path}")
 
-queryEngine = load_data_and_models(paths)
+queryEngine = load_data_and_models()
 
 
 defaultQuery = ""
