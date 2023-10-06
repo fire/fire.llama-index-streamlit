@@ -10,6 +10,13 @@ from llama_index.llms.llama_utils import messages_to_prompt, completion_to_promp
 from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 import hashlib
 import pickle
+from llama_index import StorageContext, load_index_from_storage
+
+DATA_DIR = "data"
+MANUALS_DIR = "data/manuals"
+GITHUB_DIR = "data/manuals/.github"
+DECISION_DIR = "data/manuals/decisions"
+CHANGELOG_DIR = "data/manuals/changelog"
 
 st.title("Ask Aria")
 
@@ -19,40 +26,8 @@ AI Disclaimer: Aria, the AI, generates responses based on data it has learned. T
 For more details, visit our code repository on [GitHub](https://github.com/fire/fire.llama-index-streamlit).
 """)
 
-DATA_DIR = "data"
-MANUALS_DIR = "data/manuals"
-GITHUB_DIR = "data/manuals/.github"
-DECISION_DIR = "data/manuals/decisions"
-CHANGELOG_DIR = "data/manuals/changelog"
-
-from llama_index import StorageContext, load_index_from_storage
-
-@st.cache_resource
-def load_data_and_models():
-    # Define destination directory
-    dest_dir = 'cache'
-
-    # Set batch size
-    batch_size = 10
-
-    documentsData = []
-    seen_hashes = set()
-
-    embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
-    llmModel = LlamaCPP(
-        model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
-        temperature=0.1,
-        max_new_tokens=256,
-        context_window=3900,
-        generate_kwargs={},
-        model_kwargs={"n_gpu_layers": 1000},
-        messages_to_prompt=messages_to_prompt,
-        completion_to_prompt=completion_to_prompt,
-        # verbose=True,
-    )
-    serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
-
-    paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
+@st.cache_data(ttl=3600)
+def load_documents(paths):
     docs = []
     for path in paths:
         for name in os.listdir(path):
@@ -66,19 +41,24 @@ def load_data_and_models():
                         docs.append(Document(text=text))
                 except UnicodeDecodeError:
                     print(f"Error decoding file: {full_path}")
-    storage_context = StorageContext.from_defaults(persist_dir="./storage")
+    return docs
 
-    try:
-        indexData = load_index_from_storage(storage_context)
-    except Exception as e:
-        print(f"Index data not found in storage. Generating new vectors: {e}")
-        indexData = VectorStoreIndex.from_documents(docs, service_context=serviceContext)
+paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
+docs = load_documents(paths)
 
-    queryEngine = indexData.as_query_engine()
-
-    indexData.storage_context.persist()
-
-    return queryEngine
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
+llmModel = LlamaCPP(
+    model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
+    temperature=0.1,
+    max_new_tokens=512,
+    context_window=3900,
+    generate_kwargs={},
+    model_kwargs={"n_gpu_layers": 1000},
+    messages_to_prompt=messages_to_prompt,
+    completion_to_prompt=completion_to_prompt,
+    # verbose=True,
+)
+serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
 docs = []
@@ -94,9 +74,22 @@ for path in paths:
                     docs.append(Document(text=text))
             except UnicodeDecodeError:
                 print(f"Error decoding file: {full_path}")
+storage_context = StorageContext.from_defaults(persist_dir="./storage")
 
-queryEngine = load_data_and_models()
+@st.cache_data(ttl=3600)
+def load_index_data(storage_context, docs, service_context):
+    try:
+        indexData = load_index_from_storage(storage_context)
+    except Exception as e:
+        print(f"Index data not found in storage. Generating new vectors: {e}")
+        indexData = VectorStoreIndex.from_documents(docs, service_context=service_context)
+    return indexData
 
+indexData = load_index_data(storage_context, docs, serviceContext)
+
+queryEngine = indexData.as_query_engine()
+
+indexData.storage_context.persist()
 
 defaultQuery = ""
 
@@ -152,12 +145,16 @@ results_per_page = 10
 
 start_index = st.session_state.page_number * results_per_page
 
-c.execute('''
-    SELECT * FROM results
-    ORDER BY ROWID DESC
-    LIMIT ? OFFSET ?
-''', (results_per_page, start_index))
-current_page_results = c.fetchall()
+@st.cache_data(ttl=3600)
+def fetch_results(results_per_page, start_index):
+    c.execute('''
+        SELECT * FROM results
+        ORDER BY ROWID DESC
+        LIMIT ? OFFSET ?
+    ''', (results_per_page, start_index))
+    return c.fetchall()
+
+current_page_results = fetch_results(results_per_page, start_index)
 
 st.table(current_page_results)
 
