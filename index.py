@@ -76,7 +76,7 @@ for path in paths:
                 print(f"Error decoding file: {full_path}")
 storage_context = StorageContext.from_defaults(persist_dir="./storage")
 
-@st.cache_data(ttl=3600)
+@st.cache_resource(ttl=3600)
 def load_index_data(storage_context, docs, service_context):
     try:
         indexData = load_index_from_storage(storage_context)
