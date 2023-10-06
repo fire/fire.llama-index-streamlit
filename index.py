@@ -26,10 +26,10 @@ DECISION_DIR = "data/manuals/decisions"
 CHANGELOG_DIR = "data/manuals/changelog"
 
 from llama_index import StorageContext, load_index_from_storage
-from typing import List
+from typing import Tuple
 
 @st.cache_data(persist="disk")
-def load_data_and_models(docs: List[str]):
+def load_data_and_models(docs: Tuple[str]):
     # Define destination directory
     dest_dir = 'cache'
 
