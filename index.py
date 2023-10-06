@@ -2,10 +2,14 @@ import os
 import sqlite3
 import streamlit as st
 import time
+from llama_index.storage.docstore import SimpleDocumentStore
 from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
 from llama_index.llms import LlamaCPP
+from llama_index.schema import BaseNode, Document
 from llama_index.llms.llama_utils import messages_to_prompt, completion_to_prompt
 from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
+import hashlib
+import pickle
 
 st.title("Ask Aria")
 
@@ -15,9 +19,24 @@ AI Disclaimer: Aria, the AI, generates responses based on data it has learned. T
 For more details, visit our code repository on [GitHub](https://github.com/fire/fire.llama-index-streamlit).
 """)
 
+DATA_DIR = "data"
+MANUALS_DIR = "data/manuals"
+GITHUB_DIR = "data/manuals/.github"
+DECISION_DIR = "data/manuals/decisions"
+
+from llama_index import StorageContext, load_index_from_storage
 
 @st.cache_resource
 def load_data_and_models():
+    # Define destination directory
+    dest_dir = 'cache'
+
+    # Set batch size
+    batch_size = 10
+
+    documentsData = []
+    seen_hashes = set()
+
     embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
     llmModel = LlamaCPP(
         model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
@@ -28,21 +47,35 @@ def load_data_and_models():
         model_kwargs={"n_gpu_layers": 1},
         messages_to_prompt=messages_to_prompt,
         completion_to_prompt=completion_to_prompt,
-        verbose=True,
+        # verbose=True,
     )
-
-    documentsData1 = SimpleDirectoryReader("data").load_data()
-    documentsData2 = SimpleDirectoryReader("data/manuals").load_data()
-    documentsData4 = SimpleDirectoryReader("data/manuals/.github").load_data()
-
-    documentsData = documentsData1 + documentsData2 + documentsData4
-
     serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
-    indexData = VectorStoreIndex.from_documents(documentsData, service_context=serviceContext)
 
-    queryEngine = indexData.as_query_engine()
+    paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR]  
+    docs = []
+    for path in paths:
+        for name in os.listdir(path):
+            full_path = os.path.join(path, name)
+            if os.path.isfile(full_path):
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        text = f.read()
+                        if len(text) == 0:
+                            continue
+                        docs.append(Document(text=text))
+                except UnicodeDecodeError:
+                    print(f"Error decoding file: {full_path}")
+        storage_context = StorageContext.from_defaults(persist_dir="./storage")
+        try:
+            indexData = load_index_from_storage(storage_context)
+        except Exception as e:
+            print(f"An error occurred: {e}")        
+        indexData = VectorStoreIndex.from_documents(docs, service_context=serviceContext)
+        queryEngine = indexData.as_query_engine()
+        indexData.storage_context.persist()
 
     return queryEngine
+
 
 queryEngine = load_data_and_models()
 
