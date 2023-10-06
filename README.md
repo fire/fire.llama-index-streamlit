@@ -14,7 +14,7 @@ $env:CMAKE_ARGS="-DLLAMA_CLBLAST=on"
 pip install llama-cpp-python --force-reinstall --upgrade --no-cache-dir
 pip install -r requirements.txt
 pip install streamlit
-streamlit run index.py --server.port 8502 --server.address 0.0.0.0
+streamlit run index.py --server.port 8502 --server.address 127.0.0.1
 ```
 
 ## Quick start, second run
