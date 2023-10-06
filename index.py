@@ -23,6 +23,7 @@ DATA_DIR = "data"
 MANUALS_DIR = "data/manuals"
 GITHUB_DIR = "data/manuals/.github"
 DECISION_DIR = "data/manuals/decisions"
+CHANGELOG_DIR = "data/manuals/changelog"
 
 from llama_index import StorageContext, load_index_from_storage
 
@@ -51,7 +52,7 @@ def load_data_and_models():
     )
     serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
-    paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR]  
+    paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
     docs = []
     for path in paths:
         for name in os.listdir(path):
