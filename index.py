@@ -55,7 +55,7 @@ Let's explore this virtual world together!
 docs = []
 valid_extensions = ['.txt', '.md', '.qmd'] 
  
-for path in paths: 
+for path in DATA_DIRS: 
     for name in os.listdir(path): 
         full_path = os.path.join(path, name) 
         if os.path.isfile(full_path) and os.path.splitext(full_path)[1] in valid_extensions: 
