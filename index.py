@@ -66,14 +66,14 @@ def load_documents(paths):
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
 
-embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 llmModel = LlamaCPP(
-    model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
+    model_url="https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GGUF/resolve/main/mistral-7b-openorca.Q5_K_S.gguf",
     temperature=0.1,
     max_new_tokens=1024,
     context_window=16000,
     generate_kwargs={},
-    model_kwargs={"n_gpu_layers": 1000},
+    model_kwargs={"n_gpu_layers": 1},
     messages_to_prompt=messages_to_prompt,
     completion_to_prompt=completion_to_prompt,
     verbose=True,
@@ -87,19 +87,17 @@ def load_index_data(_storage_context, _docs, _service_context):
         indexData = load_index_from_storage(_storage_context)
     except Exception as e:
         print(f"Index data not found in storage. Generating new vectors: {e}")
-        for d in _docs:
-            logging.info(f'Processing document: {d[:10]}')
-            indexData = indexData.insert(d, service_context=_service_context)
-            indexData.storage_context.persist()
-            
+        
+        indexData = VectorStoreIndex.from_documents( 
+            _docs, service_context=_service_context 
+        ) 
+        indexData.storage_context.persist() 
     return indexData
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
 
-batches = [docs[i:i + 1] for i in range(0, len(docs), 1)]
-
-indexData = load_index_data(storage_context, batches, serviceContext)
+indexData = load_index_data(storage_context, docs, serviceContext)
 
 queryEngine = indexData.as_query_engine()
 
