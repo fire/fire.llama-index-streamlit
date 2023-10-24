@@ -66,7 +66,7 @@ def load_documents(paths):
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
 
-embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/llm-embedder")
 llmModel = LlamaCPP(
     model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
     temperature=0.1,
