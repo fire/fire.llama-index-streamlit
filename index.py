@@ -62,10 +62,12 @@ serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedMod
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
 docs = []
+valid_extensions = ['.txt', '.md', '.qmd']
+
 for path in paths:
     for name in os.listdir(path):
         full_path = os.path.join(path, name)
-        if os.path.isfile(full_path):
+        if os.path.isfile(full_path) and os.path.splitext(full_path)[1] in valid_extensions:
             try:
                 with open(full_path, 'r', encoding='utf-8') as f:
                     text = f.read()
@@ -74,6 +76,7 @@ for path in paths:
                     docs.append(Document(text=text))
             except UnicodeDecodeError:
                 print(f"Error decoding file: {full_path}")
+
 storage_context = StorageContext.from_defaults(persist_dir="./storage")
 
 @st.cache_resource(ttl=3600)
