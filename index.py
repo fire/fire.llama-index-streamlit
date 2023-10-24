@@ -193,4 +193,4 @@ if st.session_state.page_number > 0:
 
 conn.close()
 
-st.markdown(f"Startup time: {elapsed_time} seconds") 
+st.markdown(f"Startup time: {elapsed_time} seconds")
