@@ -80,7 +80,6 @@ llmModel = LlamaCPP(
 )
 serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
-@st.cache_resource(ttl=3600) 
 def load_index_data(_docs, _service_context): 
     return VectorStoreIndex.from_documents(_docs, service_context=_service_context) 
 
