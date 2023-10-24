@@ -152,7 +152,7 @@ def fetch_results(results_per_page, start_index):
     ''', (results_per_page, start_index))
     return c.fetchall()
 
-current_page_results = fetch_results(results_per_page, start_index)
+current_page_results = fetch_results(results_per_page, start_index, columns=(["Timstamp", "Query", "Response"]))
 
 st.table(current_page_results)
 
