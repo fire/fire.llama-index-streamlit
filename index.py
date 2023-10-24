@@ -53,18 +53,20 @@ Let's explore this virtual world together!
 
 
 docs = []
-for path in DATA_DIRS:
-    for name in os.listdir(path):
-        full_path = os.path.join(path, name)
-        if os.path.isfile(full_path):
-            try:
-                with open(full_path, "r", encoding="utf-8") as f:
-                    text = f.read()
-                    if len(text) == 0:
-                        continue
-                    docs.append(Document(text=text))
-            except:
-                print(f"Error decoding file: {full_path}")
+valid_extensions = ['.txt', '.md', '.qmd'] 
+ 
+for path in paths: 
+    for name in os.listdir(path): 
+        full_path = os.path.join(path, name) 
+        if os.path.isfile(full_path) and os.path.splitext(full_path)[1] in valid_extensions: 
+            try: 
+                with open(full_path, 'r', encoding='utf-8') as f: 
+                    text = f.read() 
+                    if len(text) == 0: 
+                        continue 
+                    docs.append(Document(text=text)) 
+            except: 
+                print(f"Error decoding file: {full_path}") 
 
 embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 llmModel = LlamaCPP(
