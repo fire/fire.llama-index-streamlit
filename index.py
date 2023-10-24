@@ -55,49 +55,36 @@ from threading import Lock
 
 lock = Lock()
 
+with lock:
+    docs = []
+    for path in DATA_DIRS:
+        for name in os.listdir(path):
+            full_path = os.path.join(path, name)
+            if os.path.isfile(full_path):
+                try:
+                    with open(full_path, "r", encoding="utf-8") as f:
+                        text = f.read()
+                        if len(text) == 0:
+                            continue
+                        docs.append(Document(text=text))
+                except UnicodeDecodeError:
+                    print(f"Error decoding file: {full_path}")
 
-@st.cache_resource(ttl=3600)
-def load_documents_and_model(paths):
-    with lock:
-        docs = []
-        for path in paths:
-            for name in os.listdir(path):
-                full_path = os.path.join(path, name)
-                if os.path.isfile(full_path):
-                    try:
-                        with open(full_path, "r", encoding="utf-8") as f:
-                            text = f.read()
-                            if len(text) == 0:
-                                continue
-                            docs.append(Document(text=text))
-                    except UnicodeDecodeError:
-                        print(f"Error decoding file: {full_path}")
+    embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+    llmModel = LlamaCPP(
+        model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
+        temperature=0.01,
+        max_new_tokens=2000,
+        context_window=4000,
+        generate_kwargs={},
+        model_kwargs={"n_gpu_layers": 1},
+        messages_to_prompt=messages_to_prompt,
+        completion_to_prompt=completion_to_prompt,
+        verbose=False,
+    )
+    service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
-        embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-large-en-v1.5")
-        llmModel = LlamaCPP(
-            model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
-            temperature=0.01,
-            max_new_tokens=16000,
-            context_window=16000,
-            generate_kwargs={},
-            model_kwargs={"n_gpu_layers": 1},
-            messages_to_prompt=messages_to_prompt,
-            completion_to_prompt=completion_to_prompt,
-            verbose=False,
-        )
-        service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
-
-        return docs, service_context
-
-docs, service_context = load_documents_and_model(DATA_DIRS)
-
-@st.cache_resource(ttl=3600)
-def load_index_data(_docs, _service_context):
-    return VectorStoreIndex.from_documents(_docs, service_context=_service_context)
-
-
-indexData = load_index_data(docs, service_context)
-
+indexData = VectorStoreIndex.from_documents(docs, service_context=service_context)
 queryEngine = indexData.as_query_engine()
 
 conn = sqlite3.connect("query_results.db")
