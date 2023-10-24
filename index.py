@@ -66,12 +66,7 @@ def load_documents(paths):
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
 
-from InstructorEmbedding import INSTRUCTOR
-model = INSTRUCTOR('hkunlp/instructor-large')
-sentence = "Virtual Reality Technology: Open-Source Software Development"
-instruction = "Represent the journey and objectives of V-Sekai in the field of open-source VR technology document:"
-
-embedModel = model.encode([[instruction, sentence]])
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-large-en-v1.5")
 llmModel = LlamaCPP(
     model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
     temperature=0.1,
