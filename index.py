@@ -152,9 +152,9 @@ def fetch_results(results_per_page, start_index):
     ''', (results_per_page, start_index))
     return c.fetchall()
 
-current_page_results = fetch_results(results_per_page, start_index, columns=(["Timstamp", "Query", "Response"]))
+current_page_results = fetch_results(results_per_page, start_index)
 
-st.table(current_page_results)
+st.table(current_page_results, columns=(["Timestamp", "Query", "Response"]))
 
 if len(current_page_results) == results_per_page:
     if st.button('Next Page'):
