@@ -111,8 +111,8 @@ c.execute('''
 ''') 
 
 elapsed_time = time.time() - start_time 
-print(f"Startup time: {elapsed_time} seconds") 
- 
+st.markdown(f"Startup time: {elapsed_time} seconds") 
+
 with st.form(key='my_form'): 
     queryInput = st.text_input("Welcome to V-Sekai!", defaultQuery) 
     submitButton = st.form_submit_button(label='Submit') 
