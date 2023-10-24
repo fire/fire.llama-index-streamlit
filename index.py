@@ -71,7 +71,7 @@ def load_documents_and_model(paths):
                     except UnicodeDecodeError:
                         print(f"Error decoding file: {full_path}")
 
-        embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en-v1.5")
+        embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
         llmModel = LlamaCPP(
             model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
             temperature=0.01,
