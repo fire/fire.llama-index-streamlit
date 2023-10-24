@@ -3,3 +3,4 @@ llama_index
 llama-cpp-python
 sentence-transformers
 jaxlib==0.4.14
+InstructorEmbedding

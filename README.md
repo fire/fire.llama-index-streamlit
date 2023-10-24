@@ -33,7 +33,7 @@ streamlit run index.py --server.port 8502 --server.address 127.0.0.1
 
 ```powershell
 micromamba activate -n llama-index
-streamlit run index.py --server.port 8502 --server.address 0.0.0.0
+streamlit run index.py --server.port 8502 --server.address 127.0.0.1
 ```
 
 ## Quick start, second run proxying

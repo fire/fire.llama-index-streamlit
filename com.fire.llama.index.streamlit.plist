@@ -8,9 +8,9 @@
     <array>
         <string>/opt/homebrew/bin/streamlit</string>
         <string>run</string>
-        <string>/Users/ernest.lee/Documents/fire.llama-index-streamlit/index.py</string>
+        <string>/Users/ernest.lee/Documents/2023-10/fire.llama-index-streamlit/index.py</string>
         <string>--server.address</string>
-        <string>0.0.0.0</string>
+        <string>127.0.0.1</string>
         <string>--server.port</string>
         <string>8502</string>
     </array>
@@ -19,6 +19,6 @@
     <key>KeepAlive</key>
     <true/>
     <key>WorkingDirectory</key>
-    <string>/Users/ernest.lee/Documents/fire.llama-index-streamlit</string>
+    <string>/Users/ernest.lee/Documents/2023-10/fire.llama-index-streamlit/</string>
 </dict>
 </plist>
