@@ -32,13 +32,6 @@ st.markdown(
     As an assistant character, my role is to assist and inform newcomers  
     about our virtual universe. 
     
-    ## What Can I Do? 
-    
-    - Guide you through the basics of V-Sekai 
-    - Provide information about game mechanics and features 
-    - Assist with any queries or issues you might encounter 
-    - Keep you updated on new updates and events 
-    
     --- 
     
     Remember, I'm always here to help you navigate through V-Sekai.  
