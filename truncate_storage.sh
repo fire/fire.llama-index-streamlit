@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Loop through all json files in the current directory
-for file in *.json
+for file in storage/*.json
 do
     # Truncate each file
     echo -n "{}" > $file
