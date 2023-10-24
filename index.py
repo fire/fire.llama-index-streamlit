@@ -59,7 +59,7 @@ def load_documents(paths):
 
 docs = load_documents(DATA_DIRS)
 
-embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en-v1.5")
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
 llmModel = LlamaCPP(
     model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
     temperature=0.01,
