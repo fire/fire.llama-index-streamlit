@@ -87,8 +87,9 @@ def load_index_data(_docs, _service_context):
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
 
-indexData = load_index_data(storage_context, docs, serviceContext)
-
+indexData = VectorStoreIndex.from_documents( 
+            _docs, service_context=_service_context 
+        ) 
 queryEngine = indexData.as_query_engine()
 
 conn = sqlite3.connect("query_results.db")
