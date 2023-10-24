@@ -80,19 +80,9 @@ llmModel = LlamaCPP(
 )
 serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
-storage_context = StorageContext.from_defaults(persist_dir="./storage")
-
-def load_index_data(_storage_context, _docs, _service_context):
-    try:
-        indexData = load_index_from_storage(_storage_context)
-    except Exception as e:
-        print(f"Index data not found in storage. Generating new vectors: {e}")
-        
-        indexData = VectorStoreIndex.from_documents( 
-            _docs, service_context=_service_context 
-        ) 
-        indexData.storage_context.persist() 
-    return indexData
+@st.cache_resource(ttl=3600) 
+def load_index_data(_docs, _service_context): 
+    return VectorStoreIndex.from_documents(_docs, service_context=_service_context) 
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
@@ -100,10 +90,6 @@ docs = load_documents(paths)
 indexData = load_index_data(storage_context, docs, serviceContext)
 
 queryEngine = indexData.as_query_engine()
-
-indexData.storage_context.persist()
-
-defaultQuery = ""
 
 conn = sqlite3.connect("query_results.db")
 
@@ -124,7 +110,7 @@ c.execute(
 elapsed_time = time.time() - start_time
 
 with st.form(key="my_form"):
-    queryInput = st.text_input("Welcome to V-Sekai!", defaultQuery)
+    queryInput = st.text_input("Welcome to V-Sekai!", "")
     submitButton = st.form_submit_button(label="Submit")
 
 if submitButton:
