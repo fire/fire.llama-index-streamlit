@@ -76,7 +76,7 @@ def load_documents_and_model(paths):
             model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
             temperature=0.01,
             max_new_tokens=1024,
-            context_window=14000,
+            context_window=16000,
             generate_kwargs={},
             model_kwargs={"n_gpu_layers": 1000},
             messages_to_prompt=messages_to_prompt,
