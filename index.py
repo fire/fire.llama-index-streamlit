@@ -66,9 +66,9 @@ llmModel = LlamaCPP(
 service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
 @st.cache_resource(ttl=3600)
-def load_index_data(docs, _service_context):
+def load_index_data(_docs, _service_context):
     print(f"Generating new vectors")
-    return VectorStoreIndex.from_documents(docs, service_context=_service_context)
+    return VectorStoreIndex.from_documents(_docs, service_context=_service_context)
 
 indexData = load_index_data(docs, service_context)
 
