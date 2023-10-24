@@ -111,7 +111,6 @@ c.execute('''
 ''') 
 
 elapsed_time = time.time() - start_time 
-st.markdown(f"Startup time: {elapsed_time} seconds") 
 
 with st.form(key='my_form'): 
     queryInput = st.text_input("Welcome to V-Sekai!", defaultQuery) 
@@ -174,3 +173,5 @@ if st.session_state.get("page_number", 0) > 0 and st.button("Previous Page"):
     st.session_state["page_number"] -= 1
 
 conn.close()
+
+st.markdown(f"Startup time: {elapsed_time} seconds") 
