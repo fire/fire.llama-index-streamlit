@@ -8,8 +8,6 @@ from llama_index.llms import LlamaCPP
 from llama_index.schema import BaseNode, Document
 from llama_index.llms.llama_utils import messages_to_prompt, completion_to_prompt
 from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
-import hashlib
-import pickle
 from llama_index import StorageContext, load_index_from_storage
 
 DATA_DIR = "data"
@@ -51,7 +49,7 @@ def load_documents(paths):
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
 docs = load_documents(paths)
 
-embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/llm-embedder")
 llmModel = LlamaCPP(
     model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
     temperature=0.1,
