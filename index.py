@@ -26,25 +26,31 @@ AI Disclaimer: Aria, the AI, generates responses based on data it has learned. T
 For more details, visit our code repository on [GitHub](https://github.com/fire/fire.llama-index-streamlit).
 """)
 
-@st.cache_data(ttl=3600)
-def load_documents(paths):
-    docs = []
-    for path in paths:
-        for name in os.listdir(path):
-            full_path = os.path.join(path, name)
-            if os.path.isfile(full_path):
-                try:
-                    with open(full_path, 'r', encoding='utf-8') as f:
-                        text = f.read()
-                        if len(text) == 0:
-                            continue
-                        docs.append(Document(text=text))
-                except UnicodeDecodeError:
-                    print(f"Error decoding file: {full_path}")
-    return docs
+from threading import Lock
 
+lock = Lock()
+
+@st.cache_data(ttl=3600)
+def load_documents(paths, valid_extensions):
+    with lock:
+        docs = []
+        for path in paths:
+            for name in os.listdir(path):
+                full_path = os.path.join(path, name)
+                if os.path.isfile(full_path) and os.path.splitext(full_path)[1] in valid_extensions:
+                    try:
+                        with open(full_path, 'r', encoding='utf-8') as f:
+                            text = f.read()
+                            if len(text) == 0:
+                                continue
+                            docs.append(Document(text=text))
+                    except UnicodeDecodeError:
+                        print(f"Error decoding file: {full_path}")
+        return docs
+
+valid_extensions = ['.txt', '.md', '.qmd']
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
-docs = load_documents(paths)
+docs = load_documents(paths, valid_extensions)
 
 embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
 llmModel = LlamaCPP(
@@ -59,23 +65,6 @@ llmModel = LlamaCPP(
     verbose=True,
 )
 serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
-
-paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
-docs = []
-valid_extensions = ['.txt', '.md', '.qmd']
-
-for path in paths:
-    for name in os.listdir(path):
-        full_path = os.path.join(path, name)
-        if os.path.isfile(full_path) and os.path.splitext(full_path)[1] in valid_extensions:
-            try:
-                with open(full_path, 'r', encoding='utf-8') as f:
-                    text = f.read()
-                    if len(text) == 0:
-                        continue
-                    docs.append(Document(text=text))
-            except UnicodeDecodeError:
-                print(f"Error decoding file: {full_path}")
 
 storage_context = StorageContext.from_defaults(persist_dir="./storage")
 
@@ -111,7 +100,25 @@ c.execute('''
 ''')
 
 with st.form(key='my_form'):
-    queryInput = st.text_input("What would you like to ask? (source: data)", defaultQuery)
+    queryInput = st.text_input("""
+    # Welcome to V-Sekai!
+
+    Hello! I'm Aria, your guide and assistant in the world of V-Sekai. 
+    As an assistant character, my role is to assist and inform newcomers 
+    about our virtual universe.
+
+    ## What Can I Do?
+
+    - Guide you through the basics of V-Sekai
+    - Provide information about game mechanics and features
+    - Assist with any queries or issues you might encounter
+    - Keep you updated on new updates and events
+
+    ---
+
+    Remember, I'm always here to help you navigate through V-Sekai. 
+    Let's explore this virtual world together! 
+    """, defaultQuery)
     submitButton = st.form_submit_button(label='Submit')
 
 if submitButton:
