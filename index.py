@@ -39,28 +39,22 @@ st.markdown(
     """
 )
 
-from threading import Lock
-
-lock = Lock()
-
-
 @st.cache_data(ttl=3600)
 def load_documents(paths):
-    with lock:
-        docs = []
-        for path in paths:
-            for name in os.listdir(path):
-                full_path = os.path.join(path, name)
-                if os.path.isfile(full_path):
-                    try:
-                        with open(full_path, "r", encoding="utf-8") as f:
-                            text = f.read()
-                            if len(text) == 0:
-                                continue
-                            docs.append(Document(text=text))
-                    except UnicodeDecodeError:
-                        print(f"Error decoding file: {full_path}")
-        return docs
+    docs = []
+    for path in paths:
+        for name in os.listdir(path):
+            full_path = os.path.join(path, name)
+            if os.path.isfile(full_path):
+                try:
+                    with open(full_path, "r", encoding="utf-8") as f:
+                        text = f.read()
+                        if len(text) == 0:
+                            continue
+                        docs.append(Document(text=text))
+                except UnicodeDecodeError:
+                    print(f"Error decoding file: {full_path}")
+    return docs
 
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
@@ -68,7 +62,7 @@ docs = load_documents(paths)
 
 embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 llmModel = LlamaCPP(
-    model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf", 
+    model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q4_K_S.gguf", 
     temperature=0.1,
     max_new_tokens=1024,
     context_window=2000,
