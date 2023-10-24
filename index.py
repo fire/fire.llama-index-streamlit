@@ -80,7 +80,7 @@ def load_documents_and_model(paths):
             max_new_tokens=16000,
             context_window=16000,
             generate_kwargs={},
-            model_kwargs={"n_gpu_layers": 1000},
+            model_kwargs={"n_gpu_layers": 1},
             messages_to_prompt=messages_to_prompt,
             completion_to_prompt=completion_to_prompt,
             verbose=False,
