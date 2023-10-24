@@ -48,15 +48,15 @@ docs = load_documents(paths)
 
 embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
 llmModel = LlamaCPP(
-    model_url="https://huggingface.co/s3nh/teknium-OpenHermes-13B-GGUF/resolve/main/teknium-OpenHermes-13B.Q5_K_S.gguf",
+    model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
     temperature=0.1,
-    max_new_tokens=512,
-    context_window=3900,
+    max_new_tokens=1024,
+    context_window=8000,
     generate_kwargs={},
     model_kwargs={"n_gpu_layers": 1000},
     messages_to_prompt=messages_to_prompt,
     completion_to_prompt=completion_to_prompt,
-    # verbose=True,
+    verbose=True,
 )
 serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
