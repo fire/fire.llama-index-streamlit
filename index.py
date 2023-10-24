@@ -69,7 +69,7 @@ docs = load_documents(paths)
 from InstructorEmbedding import INSTRUCTOR
 model = INSTRUCTOR('hkunlp/instructor-xl')
 sentence = "Virtual Reality Technology: Open-Source Software Development"
-instruction = "Understanding the journey and objectives of V-Sekai in the field of open-source VR technology document:"
+instruction = "Represent the journey and objectives of V-Sekai in the field of open-source VR technology document:"
 
 embedModel = model.encode([[instruction, sentence]])
 llmModel = LlamaCPP(
