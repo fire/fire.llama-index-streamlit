@@ -31,13 +31,13 @@ from threading import Lock
 lock = Lock()
 
 @st.cache_data(ttl=3600)
-def load_documents(paths, valid_extensions):
+def load_documents(paths):
     with lock:
         docs = []
         for path in paths:
             for name in os.listdir(path):
                 full_path = os.path.join(path, name)
-                if os.path.isfile(full_path) and os.path.splitext(full_path)[1] in valid_extensions:
+                if os.path.isfile(full_path):
                     try:
                         with open(full_path, 'r', encoding='utf-8') as f:
                             text = f.read()
@@ -48,9 +48,8 @@ def load_documents(paths, valid_extensions):
                         print(f"Error decoding file: {full_path}")
         return docs
 
-valid_extensions = ['.txt', '.md', '.qmd']
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]  
-docs = load_documents(paths, valid_extensions)
+docs = load_documents(paths)
 
 embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en")
 llmModel = LlamaCPP(
