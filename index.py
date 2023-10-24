@@ -68,7 +68,7 @@ for path in DATA_DIRS:
             except: 
                 print(f"Error decoding file: {full_path}") 
 
-embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-large-en-v1.5")
 llmModel = LlamaCPP(
     model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
     temperature=0.01,
@@ -78,7 +78,7 @@ llmModel = LlamaCPP(
     model_kwargs={"n_gpu_layers": 1},
     messages_to_prompt=messages_to_prompt,
     completion_to_prompt=completion_to_prompt,
-    verbose=False,
+    verbose=True,
 )
 service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
