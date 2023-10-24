@@ -68,7 +68,7 @@ docs = load_documents(paths)
 
 embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 llmModel = LlamaCPP(
-    model_url="https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GGUF/resolve/main/mistral-7b-openorca.Q5_K_S.gguf",
+    model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf", 
     temperature=0.1,
     max_new_tokens=1024,
     context_window=16000,
