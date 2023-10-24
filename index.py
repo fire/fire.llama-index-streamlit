@@ -92,15 +92,10 @@ def load_index_data(_storage_context, _docs, _service_context):
         indexData = load_index_from_storage(_storage_context)
     except Exception as e:
         print(f"Index data not found in storage. Generating new vectors: {e}")
-        
-        total_batches = len(_docs)
-        for i, batch in enumerate(_docs, start=1):
-            print(f"Processing batch {i} of {total_batches}")
-            
-            batch_index = VectorStoreIndex.from_documents(
-                batch, service_context=_service_context
-            )
-            batch_index.storage_context.persist()
+        batch_index = VectorStoreIndex.from_documents(
+            _docs, service_context=_service_context
+        )
+        batch_index.storage_context.persist()
             
         indexData = load_index_from_storage(_storage_context)
     return indexData
@@ -108,9 +103,7 @@ def load_index_data(_storage_context, _docs, _service_context):
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
 
-batches = [docs[i:i + 5] for i in range(0, len(docs), 5)]
-
-indexData = load_index_data(storage_context, batches, serviceContext)
+indexData = load_index_data(storage_context, docs, serviceContext)
 
 queryEngine = indexData.as_query_engine()
 
