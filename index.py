@@ -103,7 +103,7 @@ def load_index_data(_storage_context, _docs, _service_context):
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
 docs = load_documents(paths)
 
-batches = [docs[i:i + 20] for i in range(0, len(docs), 20)]
+batches = [docs[i:i + 1] for i in range(0, len(docs), 1)]
 
 indexData = load_index_data(storage_context, batches, serviceContext)
 
