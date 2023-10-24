@@ -12,6 +12,8 @@ import hashlib
 import pickle 
 from llama_index import StorageContext, load_index_from_storage 
  
+start_time = time.time() 
+
 DATA_DIR = "data" 
 MANUALS_DIR = "data/manuals" 
 GITHUB_DIR = "data/manuals/.github" 
@@ -114,6 +116,9 @@ c.execute('''
         PRIMARY KEY (timestamp, query) 
     ) 
 ''') 
+
+elapsed_time = time.time() - start_time 
+print(f"Startup time: {elapsed_time} seconds") 
  
 with st.form(key='my_form'): 
     queryInput = st.text_input("Welcome to V-Sekai!", defaultQuery) 
