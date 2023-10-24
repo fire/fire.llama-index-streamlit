@@ -82,20 +82,31 @@ serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedMod
 
 storage_context = StorageContext.from_defaults(persist_dir="./storage")
 
-
-@st.cache_resource(ttl=3600)
 def load_index_data(_storage_context, _docs, _service_context):
     try:
         indexData = load_index_from_storage(_storage_context)
     except Exception as e:
         print(f"Index data not found in storage. Generating new vectors: {e}")
-        indexData = VectorStoreIndex.from_documents(
-            _docs, service_context=_service_context
-        )
+        
+        indexData = VectorStoreIndex.empty(service_context=_service_context)
+
+        total_batches = len(_docs)
+        for i, batch in enumerate(_docs, start=1):
+            print(f"Processing batch {i} of {total_batches}")
+            
+            batch_index = VectorStoreIndex.from_documents(
+                batch, service_context=_service_context
+            )
+            indexData = indexData.merge(batch_index)
+            
     return indexData
 
+paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
+docs = load_documents(paths)
 
-indexData = load_index_data(storage_context, docs, serviceContext)
+batches = [docs[i:i + 20] for i in range(0, len(docs), 20)]
+
+indexData = load_index_data(storage_context, batches, serviceContext)
 
 queryEngine = indexData.as_query_engine()
 
