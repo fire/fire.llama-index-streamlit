@@ -61,7 +61,7 @@ llmModel = LlamaCPP(
     model_kwargs={"n_gpu_layers": 1000},
     messages_to_prompt=messages_to_prompt,
     completion_to_prompt=completion_to_prompt,
-    verbose=True,
+    verbose=False,
 )
 service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
