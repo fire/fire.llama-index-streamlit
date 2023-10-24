@@ -94,25 +94,7 @@ c.execute('''
 ''')
 
 with st.form(key='my_form'):
-    queryInput = st.text_input("""
-    # Welcome to V-Sekai!
-
-    Hello! I'm Aria, your guide and assistant in the world of V-Sekai. 
-    As an assistant character, my role is to assist and inform newcomers 
-    about our virtual universe.
-
-    ## What Can I Do?
-
-    - Guide you through the basics of V-Sekai
-    - Provide information about game mechanics and features
-    - Assist with any queries or issues you might encounter
-    - Keep you updated on new updates and events
-
-    ---
-
-    Remember, I'm always here to help you navigate through V-Sekai. 
-    Let's explore this virtual world together! 
-    """, defaultQuery)
+    queryInput = st.text_input("""Welcome to V-Sekai!""", defaultQuery)
     submitButton = st.form_submit_button(label='Submit')
 
 if submitButton and queryInput.strip():
