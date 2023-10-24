@@ -65,22 +65,14 @@ llmModel = LlamaCPP(
 )
 serviceContext = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
-storage_context = StorageContext.from_defaults(persist_dir="./storage")
-
 @st.cache_resource(ttl=3600)
-def load_index_data(_storage_context, _docs, _service_context):
-    try:
-        indexData = load_index_from_storage(_storage_context)
-    except Exception as e:
-        print(f"Index data not found in storage. Generating new vectors: {e}")
-        indexData = VectorStoreIndex.from_documents(_docs, service_context=_service_context)
-    return indexData
+def load_index_data(_docs, _service_context):
+    print(f"Generating new vectors: {e}")
+    return VectorStoreIndex.from_documents(_docs, service_context=_service_context)
 
-indexData = load_index_data(storage_context, docs, serviceContext)
+indexData = load_index_data(docs, serviceContext)
 
 queryEngine = indexData.as_query_engine()
-
-indexData.storage_context.persist()
 
 defaultQuery = ""
 
