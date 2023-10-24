@@ -54,8 +54,8 @@ from threading import Lock
 lock = Lock()
 
 
-@st.cache_data(ttl=3600)
-def load_documents(paths):
+@st.cache_resource(ttl=3600)
+def load_documents_and_model(paths):
     with lock:
         docs = []
         for path in paths:
@@ -70,25 +70,24 @@ def load_documents(paths):
                             docs.append(Document(text=text))
                     except UnicodeDecodeError:
                         print(f"Error decoding file: {full_path}")
-        return docs
 
+        embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en-v1.5")
+        llmModel = LlamaCPP(
+            model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
+            temperature=0.01,
+            max_new_tokens=1024,
+            context_window=14000,
+            generate_kwargs={},
+            model_kwargs={"n_gpu_layers": 1000},
+            messages_to_prompt=messages_to_prompt,
+            completion_to_prompt=completion_to_prompt,
+            verbose=False,
+        )
+        service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
-docs = load_documents(DATA_DIRS)
+        return docs, service_context
 
-embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-base-en-v1.5")
-llmModel = LlamaCPP(
-    model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
-    temperature=0.01,
-    max_new_tokens=1024,
-    context_window=14000,
-    generate_kwargs={},
-    model_kwargs={"n_gpu_layers": 1000},
-    messages_to_prompt=messages_to_prompt,
-    completion_to_prompt=completion_to_prompt,
-    verbose=False,
-)
-service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
-
+docs, service_context = load_documents_and_model(DATA_DIRS)
 
 @st.cache_resource(ttl=3600)
 def load_index_data(_docs, _service_context):
@@ -114,7 +113,7 @@ c.execute(
 )
 
 with st.form(key="my_form"):
-    queryInput = st.text_input("""Welcome to V-Sekai!""", defaultQuery)
+    queryInput = st.text_input("Welcome to V-Sekai!", "")
     submitButton = st.form_submit_button(label="Submit")
 
 if submitButton and queryInput.strip():
