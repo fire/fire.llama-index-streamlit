@@ -71,7 +71,7 @@ llmModel = LlamaCPP(
     model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
     temperature=0.1,
     max_new_tokens=1024,
-    context_window=8000,
+    context_window=16000,
     generate_kwargs={},
     model_kwargs={"n_gpu_layers": 1000},
     messages_to_prompt=messages_to_prompt,
@@ -88,8 +88,6 @@ def load_index_data(_storage_context, _docs, _service_context):
     except Exception as e:
         print(f"Index data not found in storage. Generating new vectors: {e}")
         
-        indexData = VectorStoreIndex.empty(service_context=_service_context)
-
         total_batches = len(_docs)
         for i, batch in enumerate(_docs, start=1):
             print(f"Processing batch {i} of {total_batches}")
@@ -97,8 +95,9 @@ def load_index_data(_storage_context, _docs, _service_context):
             batch_index = VectorStoreIndex.from_documents(
                 batch, service_context=_service_context
             )
-            indexData = indexData.merge(batch_index)
+            batch_index.storage_context.persist()
             
+        indexData = load_index_from_storage(_storage_context)
     return indexData
 
 paths = [DATA_DIR, MANUALS_DIR, GITHUB_DIR, DECISION_DIR, CHANGELOG_DIR]
