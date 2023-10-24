@@ -146,7 +146,6 @@ results_per_page = 10
 
 start_index = st.session_state.page_number * results_per_page
 
-@st.cache_data(ttl=3600)
 def fetch_results(results_per_page, start_index):
     c.execute('''
         SELECT timestamp, query, response FROM results
