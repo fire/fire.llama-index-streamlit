@@ -15,6 +15,8 @@ from llama_index.schema import Document
 from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 from threading import Lock
 
+start_time = time.time()
+
 DATA_DIRS = [
     "data",
     "data/manuals",
@@ -111,6 +113,9 @@ c.execute(
     )
 """
 )
+
+elapsed_time = time.time() - start_time
+print(f"Startup time: {elapsed_time} seconds")
 
 with st.form(key="my_form"):
     queryInput = st.text_input("Welcome to V-Sekai!", "")
