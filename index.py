@@ -51,38 +51,34 @@ Let's explore this virtual world together!
 """
 )
 
-from threading import Lock
 
-lock = Lock()
+docs = []
+for path in DATA_DIRS:
+    for name in os.listdir(path):
+        full_path = os.path.join(path, name)
+        if os.path.isfile(full_path):
+            try:
+                with open(full_path, "r", encoding="utf-8") as f:
+                    text = f.read()
+                    if len(text) == 0:
+                        continue
+                    docs.append(Document(text=text))
+            except:
+                print(f"Error decoding file: {full_path}")
 
-with lock:
-    docs = []
-    for path in DATA_DIRS:
-        for name in os.listdir(path):
-            full_path = os.path.join(path, name)
-            if os.path.isfile(full_path):
-                try:
-                    with open(full_path, "r", encoding="utf-8") as f:
-                        text = f.read()
-                        if len(text) == 0:
-                            continue
-                        docs.append(Document(text=text))
-                except UnicodeDecodeError:
-                    print(f"Error decoding file: {full_path}")
-
-    embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
-    llmModel = LlamaCPP(
-        model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
-        temperature=0.01,
-        max_new_tokens=2000,
-        context_window=4000,
-        generate_kwargs={},
-        model_kwargs={"n_gpu_layers": 1},
-        messages_to_prompt=messages_to_prompt,
-        completion_to_prompt=completion_to_prompt,
-        verbose=False,
-    )
-    service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
+embedModel = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+llmModel = LlamaCPP(
+    model_url="https://huggingface.co/TheBloke/LlongOrca-13B-16K-GGUF/resolve/main/llongorca-13b-16k.Q5_K_S.gguf",
+    temperature=0.01,
+    max_new_tokens=2000,
+    context_window=4000,
+    generate_kwargs={},
+    model_kwargs={"n_gpu_layers": 1},
+    messages_to_prompt=messages_to_prompt,
+    completion_to_prompt=completion_to_prompt,
+    verbose=False,
+)
+service_context = ServiceContext.from_defaults(llm=llmModel, embed_model=embedModel)
 
 indexData = VectorStoreIndex.from_documents(docs, service_context=service_context)
 queryEngine = indexData.as_query_engine()
